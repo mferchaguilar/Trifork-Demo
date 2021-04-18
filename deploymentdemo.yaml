@@ -1,0 +1,43 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: triforkdemo-deployment
+  labels:
+    app: triforkdemo
+spec:
+  selector:
+    matchLabels:
+      app: triforkdemo
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: triforkdemo
+    spec:
+      containers:
+      - name: grpcserver
+        image: mferchaguilar/triforkdemo:v1
+        ports:
+        - containerPort: 50051
+        resources:
+          limits:
+            memory: 256Mi
+            cpu: "250m"
+          requests:
+            memory: 128Mi
+            cpu: "80m"
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: triforkdemo
+spec:
+  selector:
+    app: triforkdemo
+  ports:
+    - protocol: TCP
+      port: 50051
+      targetPort: 50051
+      nodePort: 30051   
+  type: NodePort
